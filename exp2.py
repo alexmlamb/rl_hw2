@@ -5,19 +5,19 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-states = ['a', 'b']
+states = ['a', 'b','c','d','e','f']
 
 rewards = {}
-rewards['a'] = -1.0
-rewards['b'] = 1.0
+rewards['a'] = 1.0
+rewards['b'] = -1.0
+rewards['c'] = -1.0
+rewards['d'] = -1.0
+rewards['e'] = -1.0
+rewards['f'] = 5.0
 
-sigma = 0.3
+sigma = 2.0
 
 policy = {}
-policy[('a','b')] = 0.0
-policy[('a','a')] = 0.0
-policy[('b','a')] = 0.0
-policy[('b','b')] = 0.0
 
 edges = {}
 
@@ -27,6 +27,28 @@ edges['a']['b'] = True
 edges['b'] = {}
 edges['b']['a'] = True
 edges['b']['b'] = True
+edges['b']['c'] = True
+edges['c'] = {}
+edges['c']['b'] = True
+edges['c']['c'] = True
+edges['c']['d'] = True
+edges['d'] = {}
+edges['d']['c'] = True
+edges['d']['d'] = True
+edges['d']['e'] = True
+edges['e'] = {}
+edges['e']['d'] = True
+edges['e']['e'] = True
+edges['e']['f'] = True
+edges['f'] = {}
+edges['f']['f'] = True
+edges['f']['e'] = True
+
+
+for state1 in states:
+    for state2 in states:
+        if state2 in edges[state1]:
+            policy[(state1,state2)] = 0.0
 
 def sample(policy,start_state):
     probs = []
@@ -54,10 +76,10 @@ Then figure out an update vector, and remove the random perturbation.
 
 '''
 
-num_steps = 20
+num_steps = 30
 reward_lst = []
 
-use_antithetic = False
+use_antithetic = True
 
 eps = {}
 
@@ -82,7 +104,7 @@ for iteration in range(0,200000):
 
     for trans in policy: 
         policy[trans] -= eps[trans]
-        policy[trans] += 0.01 * reward_total * eps[trans]
+        policy[trans] += 0.001 * reward_total * eps[trans]
 
     if iteration % 200 == 0:
         print iteration, reward_total
